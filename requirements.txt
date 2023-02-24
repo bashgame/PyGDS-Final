@@ -1,4 +1,5 @@
 # Dependencies for this project
+biopython
 
 # testing/linting dependencies
 nose
