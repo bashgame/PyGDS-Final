@@ -19,7 +19,7 @@ FASTA format, and computes the answers to the following questions:
       contains it? (character position in the str, not index of char)
 * Given a length *n*, how many Repeats of length *n* occur in all sequences
   contained in the FASTA file?
-    * How many times does each Reapeat occur?
+    * How many times does each Repeat occur?
     * Which repeat of length *n* occurs most frequently?
 
 ### Definitions
