@@ -37,9 +37,19 @@ FASTA format, and computes the answers to the following questions:
         * Starting from the 0th character
         * Starting from the 1st character
         * Starting from the 2nd character
+    * An ORF, or Open Reading Frame, is the part of a reading frame that has
+      the potential to encode a protein.
+        * An ORF always starts with ATG, the start codon
+        * An ORF is always terminated by one of the stop codons (TAA, TAG, TGA)
+* A Repeat is a substring of a sequence that occurs more than once in the
+  sequence.
+    * We will only be concerned with the forward strand of DNA
+    * We will allow repeats to overlap themselves
+        * eg ACACA contains 2 repeats of ACA
 
 ## Testing framework
 Unit testing with unittest and coverage, linting with pylint
+Example file is located in tests/fixtures/dna.example.fasta
 ### TODO: Set up github workflow for automated testing on PRs
 
 ## Containerization
