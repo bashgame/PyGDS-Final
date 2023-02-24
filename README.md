@@ -22,6 +22,21 @@ FASTA format, and computes the answers to the following questions:
     * How many times does each Reapeat occur?
     * Which repeat of length *n* occurs most frequently?
 
+### Definitions
+* multi-FASTA format
+    * Records are defined as a single-line header, starting with '>', followed
+      by lines of sequence data.
+    * The sequence identifier is the word following '>', the rest of the header
+      is an optional description of the entry. There should be no whitespace
+      between '>' and the identifier.
+* A Reading Frame is a way of dividing the DNA sequence of nucleotides into a
+  set of consecutive, non-overlapping triplets (or codons).
+    * There are 6 possible Reading Frames based on starting position and
+      direction.
+    * The 3 forward (5' to 3') Reading Frames are:
+        * Starting from the 0th character
+        * Starting from the 1st character
+        * Starting from the 2nd character
 
 ## Testing framework
 Unit testing with unittest and coverage, linting with pylint
