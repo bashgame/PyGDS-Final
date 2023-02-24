@@ -72,7 +72,7 @@ class TestSequences(TestCase):
         self.assertEqual(sorted(lengths), sorted(fs.getAllLengths()))
 
     def test_longest_seqs(self):
-        """ It should return a dict Length:[identifiers] """
+        """ It should return a dict max_length:[identifiers] """
         fs = sequences.FastaSeq()
         fs.buildDict()
         max_length = 4805
@@ -82,6 +82,15 @@ class TestSequences(TestCase):
                 longest[max_length] += [l]
         self.assertEqual(longest[max_length], fs.getLongest()[max_length])
         
-
+    def test_shortest_seqs(self):
+        """ It should return a dict min_length:[identifiers] """
+        fs = sequences.FastaSeq()
+        fs.buildDict()
+        min_length = 512
+        shortest = []
+        for l in iter(self.test_seqs):
+            if len(self.test_seqs[l]) == min_length:
+                shortest += [l]
+        self.assertEqual(shortest, fs.getShortest()[min_length])
 
         
