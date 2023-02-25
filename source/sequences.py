@@ -47,6 +47,20 @@ class FastaSeq():
         return longest
 
     @classmethod
+    def getShortest(self):
+        lengths = self.getAllLengths()
+        min_length = min(lengths)
+        num_min = lengths.count(min_length)
+        shortest = []
+        for n in iter(self.sequences):
+            if len(self.sequences[n]) == min_length:
+                shortest += [n]
+        
+        shortest = {min_length:shortest}
+        
+        return shortest
+
+    @classmethod
     def getSeq(self, name):
         return self.sequences[name]
 
