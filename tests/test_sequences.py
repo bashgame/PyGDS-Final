@@ -113,3 +113,37 @@ class TestSequences(TestCase):
         starts = self.test_seqs[name].lower().count('atg')
         stc_ret = fs.getStartCodons(name)
         self.assertEqual(starts, len(stc_ret[0]) + len(stc_ret[1]) + len(stc_ret[2]))
+
+    def test_longest_orf_in_seq(self):
+        """ Given an id, return the longest ORF on that sequence """
+        fs = sequences.FastaSeq()
+        fs.buildDict()
+        name = "gi|142022655|gb|EQ086233.1|43"
+        start_codon = 'atg'
+        stop_codons = ['tga','tag','taa']
+        start_fx = [0, 0, 0]
+        stop_fx = [0, 0, 0]
+        seq = self.seqs[name].lower()
+        for frame in range(3):
+            for idx in range(frame,len(seq),3):
+                codon = seq[idx:idx+3]
+                if codon == start_codon:
+                    start_fx[frame] = idx
+                    break        
+        end = len(seq)
+        while 0 in stop_fx:
+            idx = max(seq.rfind(stop_codons[0], 0, end), seq.rfind(stop_codons[1], 0, end), seq.rfind(stop_codons[2], 0, end))
+            if idx > stop_fx[idx % 3]:
+                stop_fx[idx % 3] = idx
+            end = idx - 1
+        max_len = 0
+        max_idx = 0
+        for frame in range(3):
+            length = stop_fx[frame] - start_fx[frame]
+            if length > max_len:
+                max_len = length
+                max_idx = start_fx[frame]
+        result = fs.getLongestORF(name)
+        self.assertEqual(max_len, result["length"])
+        self.assertEqual(max_idx, result["index"])
+

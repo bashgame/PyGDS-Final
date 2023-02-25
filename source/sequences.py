@@ -88,6 +88,19 @@ class FastaSeq():
 
         return starts_dict
 
+    @classmethod
+    def getLongestORF(self, name):
+        starts = self.getStartCodons(name)
+        stops = self.getStopCodons(name)
+        lngst = 0
+        for frame in iter(starts):
+            length = stops[frame][-1] - starts[frame][0]
+            if length > lngst:
+                lngst = length
+                lng_idx = starts[frame][0]
+        orf_dict = {'length': lngst, 'index': lng_idx}
+        return orf_dict
+
 
 def main():
     return
