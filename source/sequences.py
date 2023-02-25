@@ -37,7 +37,7 @@ class FastaSeq():
         lengths = self.getAllLengths()
         max_length = max(lengths)
         num_max = lengths.count(max_length)
-        longest = {max_length : []}
+        longest = {max_length: []}
         counts = 0
         for n in iter(self.sequences):
             if len(self.sequences[n]) == max_length:
@@ -51,13 +51,12 @@ class FastaSeq():
     def getShortest(self):
         lengths = self.getAllLengths()
         min_length = min(lengths)
-        num_min = lengths.count(min_length)
         shortest = []
         for n in iter(self.sequences):
             if len(self.sequences[n]) == min_length:
                 shortest += [n]
-        
-        shortest = {min_length:shortest}
+
+        shortest = {min_length: shortest}
         return shortest
 
     @classmethod
