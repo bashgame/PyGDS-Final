@@ -1,7 +1,6 @@
 # from Bio import SeqIO
 # from Bio import Seq
 
-FILENAME = 'tests/fixtures/dna.example.fasta'
 # seq_recs = {record.id: record for record in SeqIO.parse(FILENAME, 'fasta')}
 
 
@@ -9,9 +8,9 @@ class FastaSeq():
     sequences = {}
 
     @classmethod
-    def buildDict(self):
+    def buildDict(self, filename):
         self.sequences.clear()
-        file = open(FILENAME)
+        file = open(filename)
         for line in file:
             line = line.rstrip()
             if line.startswith('>'):
@@ -94,12 +93,29 @@ class FastaSeq():
         stops = self.getStopCodons(name)
         lngst = 0
         for frame in iter(starts):
+            if stops[frame] == [] or starts[frame] == []:
+                continue
             length = stops[frame][-1] - starts[frame][0]
             if length > lngst:
                 lngst = length
                 lng_idx = starts[frame][0]
         orf_dict = {'length': lngst, 'index': lng_idx}
         return orf_dict
+
+    @classmethod
+    def getFileLongestORF(self):
+        longest = 0
+        lgst_name = ''
+        orf_dict = {}
+        for name in iter(self.sequences):
+            result = self.getLongestORF(name)
+            orf_dict[name] = result
+            if result["length"] > longest:
+                longest = result["length"]
+                lgst_name = name
+                lgst_idx = result["index"]
+        ret_dict = {"name": lgst_name, "length": longest, "index": lgst_idx, "data": orf_dict}
+        return ret_dict
 
 
 def main():
