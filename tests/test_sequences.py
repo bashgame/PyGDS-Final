@@ -170,3 +170,50 @@ class TestSequences(TestCase):
         self.assertEqual(glob_max_len, result["length"])
         self.assertEqual(glob_max_idx, result["index"])
 
+    def test_repeats(self):
+        """ Given a sequence and length n, it should return all repeats
+        of length n and the number of their occurrences """ 
+        name = "gi|142022655|gb|EQ086233.1|43"
+        test_str = 'ACACAGGGACACA'
+        ac_reps = 4
+        ca_reps = 4
+        gg_reps = 2
+        aca_reps = 4
+        cac_reps = 2
+        acac_reps = 2
+        caca_reps = 2
+        acaca_reps = 2
+        result = self.fs.getRepeats(test_str, 2)
+        self.assertEqual(ac_reps, result["ac"])
+        result = self.fs.getRepeats(test_str, 3)
+        self.assertEqual(aca_reps, result["aca"])
+        self.assertEqual(cac_reps, result["cac"])
+        result = self.fs.getRepeats(self.test_seqs[name], 3)
+        self.assertNotEqual(0, result["aca"])
+
+    def test_get_frequent_repeat(self):
+        """ Given a dictionary of repeats and their occurrences, it should return
+        the repeat with the highest occurrence  """
+        test_str = 'ACACAGGGACACA'
+        test_reps = self.fs.getRepeats(test_str, 2)
+        exp_result = {"ac": 4}
+        result = self.fs.getMostRepeats(test_reps)
+        self.assertEqual(exp_result, result)
+
+    def test_get_multiseq_repeats(self):
+        """ Given a dictionary of sequences and a length n, it should return the
+        repeats of substrings of that length across all sequences """
+        test_str = 'ACACAGGGACACA'
+        aca_reps = 4
+        exp_result = 4 * aca_reps
+        test_names = ["Alice", "Bob", "Cho", "Darwish"]
+        test_dict = {x: test_str for x in test_names}
+        result = self.fs.getMultiSeqRepeats(test_dict, 3)
+        self.assertEqual(exp_result, result['aca'])
+
+    def test_get_file_repeats(self):
+        """ It should return the most common repeat in the file """
+        result = self.fs.getMultiSeqRepeats(self.fs.sequences, 3)
+        result = self.fs.getMostRepeats(result)
+        self.assertNotEqual(0, result)
+            

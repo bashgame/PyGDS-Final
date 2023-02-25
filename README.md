@@ -53,7 +53,7 @@ FASTA format, and computes the answers to the following questions:
         * eg ACACA contains 2 repeats of ACA
 
 ## Testing framework
-Unit testing with unittest and coverage, linting with pylint
+Unit testing with unittest and coverage, linting with flake8  
 Example file is located in tests/fixtures/dna.example.fasta
 ### TODO: Set up github workflow for automated testing on PRs
 
