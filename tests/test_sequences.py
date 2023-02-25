@@ -98,5 +98,18 @@ class TestSequences(TestCase):
         fs = sequences.FastaSeq()
         fs.buildDict()
         name = "gi|142022655|gb|EQ086233.1|43"
-        stops = [132, 198, 249,267]
-        self.assertEqual(stops, fs.getStopCodons(name)[0][0:4])
+        stop_codons = ['tga','tag','taa']
+        stops = 0
+        for stc in stop_codons:
+            stops += self.test_seqs[name].lower().count(stc)
+        stc_ret = fs.getStopCodons(name)
+        self.assertEqual(stops, len(stc_ret[0]) + len(stc_ret[1]) + len(stc_ret[2]))
+
+    def test_start_codons(self):
+        """ Given an id, it should return a dict with a list of indices for start codons for each frame """
+        fs = sequences.FastaSeq()
+        fs.buildDict()
+        name = "gi|142022655|gb|EQ086233.1|43"
+        starts = self.test_seqs[name].lower().count('atg')
+        stc_ret = fs.getStartCodons(name)
+        self.assertEqual(starts, len(stc_ret[0]) + len(stc_ret[1]) + len(stc_ret[2]))

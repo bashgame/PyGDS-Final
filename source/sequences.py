@@ -70,13 +70,23 @@ class FastaSeq():
         stop_codons = ['tga','tag','taa']
         stops_dict = {x: [] for x in range(3)}
         seq = self.sequences[name].lower()
-        for frame in iter(stops_dict):          # iterate over the all 3 frames
-            for idx in range(frame,len(seq),3): # iterate over each codon in the frame
-                codon = seq[idx:idx+3]
-                if codon in stop_codons:
-                    stops_dict[frame] += [idx]  # grab the index and add it to the frame's list
+        for idx in range(len(seq)): # iterate over each codon in the sequence
+            codon = seq[idx:idx+3]
+            if codon in stop_codons:
+                stops_dict[idx % 3] += [idx]  # idx % 3 gives the frame, add idx to the frame's list
 
         return stops_dict
+
+    @classmethod
+    def getStartCodons(self, name):
+        starts_dict = {x: [] for x in range(3)}
+        seq = self.sequences[name].lower()
+        for idx in range(len(seq)):
+            codon = seq[idx:idx+3]
+            if codon == 'atg':
+                starts_dict[idx % 3] += [idx]
+
+        return starts_dict
 
 def main():
     return
