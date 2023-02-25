@@ -1,6 +1,7 @@
-import Bio
+# import Bio
 
 FILENAME = 'tests/fixtures/dna.example.fasta'
+
 
 class FastaSeq():
     sequences = {}
@@ -36,7 +37,7 @@ class FastaSeq():
         lengths = self.getAllLengths()
         max_length = max(lengths)
         num_max = lengths.count(max_length)
-        longest = {max_length:[]}
+        longest = {max_length : []}
         counts = 0
         for n in iter(self.sequences):
             if len(self.sequences[n]) == max_length:
@@ -57,13 +58,12 @@ class FastaSeq():
                 shortest += [n]
         
         shortest = {min_length:shortest}
-        
         return shortest
 
     @classmethod
     def getSeq(self, name):
         return self.sequences[name]
 
+
 def main():
     return
-
