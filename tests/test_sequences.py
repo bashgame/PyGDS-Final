@@ -93,4 +93,10 @@ class TestSequences(TestCase):
                 shortest += [l]
         self.assertEqual(shortest, fs.getShortest()[min_length])
 
-        
+    def test_stop_codons(self):
+        """ Given an id, it should return a dict with a list of indices for stop codons for each frame """
+        fs = sequences.FastaSeq()
+        fs.buildDict()
+        name = "gi|142022655|gb|EQ086233.1|43"
+        stops = [132, 198, 249,267]
+        self.assertEqual(stops, fs.getStopCodons(name)[0][0:4])
