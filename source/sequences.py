@@ -150,5 +150,6 @@ class FastaSeq():
                     reps_dict[key] = val
         return reps_dict
 
+
 def main():
     return
