@@ -1,5 +1,5 @@
 # from Bio import SeqIO
-#from Bio import Seq
+# from Bio import Seq
 
 FILENAME = 'tests/fixtures/dna.example.fasta'
 # seq_recs = {record.id: record for record in SeqIO.parse(FILENAME, 'fasta')}
@@ -67,13 +67,13 @@ class FastaSeq():
 
     @classmethod
     def getStopCodons(self, name):
-        stop_codons = ['tga','tag','taa']
+        stop_codons = ['tga', 'tag', 'taa']
         stops_dict = {x: [] for x in range(3)}
         seq = self.sequences[name].lower()
-        for idx in range(len(seq)): # iterate over each codon in the sequence
+        for idx in range(len(seq)):             # iterate over each codon in the sequence
             codon = seq[idx:idx+3]
             if codon in stop_codons:
-                stops_dict[idx % 3] += [idx]  # idx % 3 gives the frame, add idx to the frame's list
+                stops_dict[idx % 3] += [idx]    # idx % 3 gives the frame, add idx to the frame's list
 
         return stops_dict
 
@@ -87,6 +87,7 @@ class FastaSeq():
                 starts_dict[idx % 3] += [idx]
 
         return starts_dict
+
 
 def main():
     return
