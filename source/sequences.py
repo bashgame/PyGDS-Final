@@ -117,6 +117,39 @@ class FastaSeq():
         ret_dict = {"name": lgst_name, "length": longest, "index": lgst_idx, "data": orf_dict}
         return ret_dict
 
+    @classmethod
+    def getRepeats(self, sequence, length):
+        repeats = {}
+        for idx in range(len(sequence)):
+            substr = sequence[idx:idx+length].lower()
+            if substr in list(repeats):
+                repeats[substr] += 1
+            elif len(substr) == length:
+                repeats[substr] = 1                 # We are counting occurrences of the substring
+        return repeats
+
+    @classmethod
+    def getMostRepeats(self, rep_dict):
+        most_common = ''
+        most_reps = 0
+        for key, val in rep_dict.items():
+            if val > most_reps:
+                most_reps = val
+                most_common = key
+        return {most_common: most_reps}
+
+    @classmethod
+    def getMultiSeqRepeats(self, seq_dict, length):
+        reps_dict = {}
+        for seq in seq_dict.values():
+            tmp_dict = self.getRepeats(seq, length)
+            for key, val in tmp_dict.items():
+                if key in reps_dict:
+                    reps_dict[key] += val
+                else:
+                    reps_dict[key] = val
+        return reps_dict
+
 
 def main():
     return
