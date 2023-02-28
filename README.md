@@ -55,7 +55,7 @@ FASTA format, and computes the answers to the following questions:
 ## Testing framework
 Unit testing with unittest and coverage, linting with flake8  
 Example file is located in tests/fixtures/dna.example.fasta
-### TODO: Set up github workflow for automated testing on PRs
+GitHub workflow for CI implemented as workflows/ci-build.yaml
 
 ## Containerization
 Includes devcontainer and Dockerfile for running in VSCode remote container
