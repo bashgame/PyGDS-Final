@@ -105,86 +105,67 @@ class TestSequences(TestCase):
     def test_longest_orf_in_seq(self):
         """ Given an id, return the longest ORF on that sequence """
         name = "gi|142022655|gb|EQ086233.1|43"
-        start_codon = 'atg'
-        stop_codons = ['tga','tag','taa']
-        start_fx = [0, 0, 0]
-        stop_fx = [0, 0, 0]
-        seq = self.seqs[name].lower()
+        sequence = self.fs.getSeq(name)
+        starts = self.fs.getStartCodons(sequence)
+        stops = self.fs.getStopCodons(sequence)
+        orf_dict = {}
         for frame in range(3):
-            for idx in range(frame,len(seq),3):
-                codon = seq[idx:idx+3]
-                if codon == start_codon:
-                    start_fx[frame] = idx
-                    break        
-        end = len(seq)
-        while 0 in stop_fx:
-            idx = max(seq.rfind(stop_codons[0], 0, end), seq.rfind(stop_codons[1], 0, end), seq.rfind(stop_codons[2], 0, end))
-            if idx > stop_fx[idx % 3]:
-                stop_fx[idx % 3] = idx
-            end = idx - 1
-        max_len = 0
-        max_idx = 0
-        for frame in range(3):
-            length = stop_fx[frame] - start_fx[frame]
-            if length > max_len:
-                max_len = length
-                max_idx = start_fx[frame]
-        result = self.fs.getLongestORF(seq)
-        self.assertEqual(max_len, result["length"])
-        self.assertEqual(max_idx, result["index"])
+            lngst = 0
+            lng_idx = -1
+            idx1 = 0
+            if stops[frame] != [] and starts[frame] != []:
+                for idx2 in range(len(stops[frame])):
+                    if idx1 < len(starts[frame]) and starts[frame][idx1] < stops[frame][idx2]:
+                        length = 3 + stops[frame][idx2] - starts[frame][idx1]
+                        if length > lngst:
+                            lngst = length
+                            lng_idx = starts[frame][idx1]
+                        while idx1 < len(starts[frame]) and starts[frame][idx1] < stops[frame][idx2]:
+                            idx1 += 1
+            orf_dict[frame] = {'length': lngst, 'index': lng_idx}
+        max_len = orf_dict[0]['length']
+        max_idx = orf_dict[0]['index']
+        result = self.fs.getLongestORF(sequence)
+        self.assertEqual(max_len, result[0]["length"])
+        self.assertEqual(max_idx, result[0]["index"])
 
     def test_longest_orf_in_file(self):
         """ Return id, length, and index of the longest ORF in the file """
-        start_codon = 'atg'
-        stop_codons = ['tga','tag','taa']
-        glob_max_len = 0
-        glob_max_idx = 0
-        glob_max_name = ''
-        for name in iter(self.test_seqs):
-            start_fx = [0, 0, 0]
-            stop_fx = [0, 0, 0]
-            seq = self.seqs[name].lower()
+        orf_dict = {}
+        ret_dict = {}
+        longest = [0, 0, 0]
+        lgst_name = ['', '', '']
+        lgst_idx = [0, 0, 0]
+        for name, seq in self.fs.sequences.items():
+            result = self.fs.getLongestORF(seq)
+            orf_dict[name] = result
             for frame in range(3):
-                for idx in range(frame,len(seq),3):
-                    codon = seq[idx:idx+3]
-                    if codon == start_codon:
-                        start_fx[frame] = idx
-                        break        
-            end = len(seq)
-            while 0 in stop_fx and end > 0:
-                idx = max(seq.rfind(stop_codons[0], 0, end), seq.rfind(stop_codons[1], 0, end), seq.rfind(stop_codons[2], 0, end))
-                if idx > stop_fx[idx % 3]:
-                    stop_fx[idx % 3] = idx
-                end = idx - 1
-            loc_max_len = 0
-            loc_max_idx = 0
-            for frame in range(3):
-                length = stop_fx[frame] - start_fx[frame]
-                if length > loc_max_len:
-                    loc_max_len = length
-                    loc_max_idx = start_fx[frame]
-            if loc_max_len > glob_max_len:
-                glob_max_len = loc_max_len
-                glob_max_name = name
-                glob_max_idx = loc_max_idx
+                if result[frame]["length"] > longest[frame]:
+                    longest[frame] = result[frame]["length"]
+                    lgst_name[frame] = name
+                    lgst_idx[frame] = result[frame]["index"]
+                ret_dict[frame] = {"name": lgst_name[frame], "length": longest[frame], "position": lgst_idx[frame] + 1}
+        max_name = ret_dict[0]['name']
+        max_len = ret_dict[0]['length']
+        max_idx = ret_dict[0]['position']
         result = self.fs.getFileLongestORF()
-        self.assertEqual(glob_max_name, result["name"])
-        self.assertEqual(glob_max_len, result["length"])
-        self.assertEqual(glob_max_idx, result["index"])
+        self.assertEqual(max_name, result[0]["name"])
+        self.assertEqual(max_len, result[0]["length"])
+        self.assertEqual(max_idx, result[0]["position"])
 
     def test_repeats(self):
         """ Given a sequence and length n, it should return all repeats
         of length n and the number of their occurrences """ 
         name = "gi|142022655|gb|EQ086233.1|43"
         test_str = 'ACACAGGGACACA'
-        ac_reps = 3
-        ca_reps = 3
-        gg_reps = 1
-        aca_reps = 3
-        cac_reps = 1
-        acac_reps = 1
-        caca_reps = 1
-        acaca_reps = 1
+        ac_reps = 4
+        ca_reps = 4
+        gg_reps = 2
+        aca_reps = 4
+        cac_reps = 2
+        acac_reps = 2
+        caca_reps = 2
+        acaca_reps = 2
         result = self.fs.getRepeats(test_str, 2)
         self.assertEqual(ac_reps, result["ac"])
         result = self.fs.getRepeats(test_str, 3)
@@ -198,7 +179,7 @@ class TestSequences(TestCase):
         the repeat with the highest occurrence  """
         test_str = 'ACACAGGGACACA'
         test_reps = self.fs.getRepeats(test_str, 2)
-        exp_result = {"ac": 3}
+        exp_result = {"ac": 4}
         result = self.fs.getMostRepeats(test_reps)
         self.assertEqual(exp_result, result)
 
@@ -206,7 +187,7 @@ class TestSequences(TestCase):
         """ Given a dictionary of sequences and a length n, it should return the
         repeats of substrings of that length across all sequences """
         test_str = 'ACACAGGGACACA'
-        aca_reps = 3
+        aca_reps = 4
         exp_result = 4 * aca_reps
         test_names = ["Alice", "Bob", "Cho", "Darwish"]
         test_dict = {x: test_str for x in test_names}

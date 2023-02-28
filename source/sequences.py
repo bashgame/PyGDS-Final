@@ -165,15 +165,21 @@ class FastaSeq():
         """
         starts = self.getStartCodons(sequence)
         stops = self.getStopCodons(sequence)
-        lngst = 0
-        for frame in iter(starts):
-            if stops[frame] == [] or starts[frame] == []:
-                continue
-            length = stops[frame][-1] - starts[frame][0]
-            if length > lngst:
-                lngst = length
-                lng_idx = starts[frame][0]
-        orf_dict = {'length': lngst, 'index': lng_idx}
+        orf_dict = {}
+        for frame in range(3):
+            lngst = 0
+            lng_idx = -1
+            idx1 = 0
+            if stops[frame] != [] and starts[frame] != []:
+                for idx2 in range(len(stops[frame])):
+                    if idx1 < len(starts[frame]) and starts[frame][idx1] < stops[frame][idx2]:
+                        length = 3 + stops[frame][idx2] - starts[frame][idx1]
+                        if length > lngst:
+                            lngst = length
+                            lng_idx = starts[frame][idx1]
+                        while idx1 < len(starts[frame]) and starts[frame][idx1] < stops[frame][idx2]:
+                            idx1 += 1
+            orf_dict[frame] = {'length': lngst, 'index': lng_idx}
         return orf_dict
 
     @classmethod
@@ -192,17 +198,20 @@ class FastaSeq():
             in the class dictionary, as well as a separate dictionary containing the name, length and starting incex of
             the longest ORF for each sequence in the class dictionary object
         """
-        longest = 0
-        lgst_name = ''
         orf_dict = {}
+        ret_dict = {}
+        longest = [0, 0, 0]
+        lgst_name = ['', '', '']
+        lgst_idx = [0, 0, 0]
         for name, seq in self.sequences.items():
             result = self.getLongestORF(seq)
             orf_dict[name] = result
-            if result["length"] > longest:
-                longest = result["length"]
-                lgst_name = name
-                lgst_idx = result["index"]
-        ret_dict = {"name": lgst_name, "length": longest, "index": lgst_idx, "data": orf_dict}
+            for frame in range(3):
+                if result[frame]["length"] > longest[frame]:
+                    longest[frame] = result[frame]["length"]
+                    lgst_name[frame] = name
+                    lgst_idx[frame] = result[frame]["index"]
+                ret_dict[frame] = {"name": lgst_name[frame], "length": longest[frame], "position": lgst_idx[frame] + 1}
         return ret_dict
 
     @classmethod
@@ -225,7 +234,7 @@ class FastaSeq():
             if substr in list(repeats):
                 repeats[substr] += 1
             elif len(substr) == length:
-                repeats[substr] = 0                 # We are counting repeats of the substring
+                repeats[substr] = 1                 # We are counting incidents of the substring
         return repeats
 
     @classmethod
