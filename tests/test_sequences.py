@@ -90,14 +90,16 @@ class TestSequences(TestCase):
         stops = 0
         for stc in stop_codons:
             stops += self.test_seqs[name].lower().count(stc)
-        stc_ret = self.fs.getStopCodons(name)
+        stc_seq = self.fs.getSeq(name)
+        stc_ret = self.fs.getStopCodons(stc_seq)
         self.assertEqual(stops, len(stc_ret[0]) + len(stc_ret[1]) + len(stc_ret[2]))
 
     def test_start_codons(self):
         """ Given an id, it should return a dict with a list of indices for start codons for each frame """
         name = "gi|142022655|gb|EQ086233.1|43"
         starts = self.test_seqs[name].lower().count('atg')
-        stc_ret = self.fs.getStartCodons(name)
+        stc_seq = self.fs.getSeq(name)
+        stc_ret = self.fs.getStartCodons(stc_seq)
         self.assertEqual(starts, len(stc_ret[0]) + len(stc_ret[1]) + len(stc_ret[2]))
 
     def test_longest_orf_in_seq(self):
@@ -127,7 +129,7 @@ class TestSequences(TestCase):
             if length > max_len:
                 max_len = length
                 max_idx = start_fx[frame]
-        result = self.fs.getLongestORF(name)
+        result = self.fs.getLongestORF(seq)
         self.assertEqual(max_len, result["length"])
         self.assertEqual(max_idx, result["index"])
 
@@ -175,14 +177,14 @@ class TestSequences(TestCase):
         of length n and the number of their occurrences """ 
         name = "gi|142022655|gb|EQ086233.1|43"
         test_str = 'ACACAGGGACACA'
-        ac_reps = 4
-        ca_reps = 4
-        gg_reps = 2
-        aca_reps = 4
-        cac_reps = 2
-        acac_reps = 2
-        caca_reps = 2
-        acaca_reps = 2
+        ac_reps = 3
+        ca_reps = 3
+        gg_reps = 1
+        aca_reps = 3
+        cac_reps = 1
+        acac_reps = 1
+        caca_reps = 1
+        acaca_reps = 1
         result = self.fs.getRepeats(test_str, 2)
         self.assertEqual(ac_reps, result["ac"])
         result = self.fs.getRepeats(test_str, 3)
@@ -196,7 +198,7 @@ class TestSequences(TestCase):
         the repeat with the highest occurrence  """
         test_str = 'ACACAGGGACACA'
         test_reps = self.fs.getRepeats(test_str, 2)
-        exp_result = {"ac": 4}
+        exp_result = {"ac": 3}
         result = self.fs.getMostRepeats(test_reps)
         self.assertEqual(exp_result, result)
 
@@ -204,7 +206,7 @@ class TestSequences(TestCase):
         """ Given a dictionary of sequences and a length n, it should return the
         repeats of substrings of that length across all sequences """
         test_str = 'ACACAGGGACACA'
-        aca_reps = 4
+        aca_reps = 3
         exp_result = 4 * aca_reps
         test_names = ["Alice", "Bob", "Cho", "Darwish"]
         test_dict = {x: test_str for x in test_names}
